@@ -6,6 +6,7 @@ class Board
 
   def initialize
     @grid = make_grid
+    @knight = Knight.new
   end
 
   # def make_square_coordinates
@@ -45,12 +46,14 @@ class Square
   end
 end
 
-# # Knight class
-# class Knight
-#   def initialize
+# Knight class
+class Knight
+  attr_accessor :position
 
-#   end
-# end
+  def initialize
+    @position = [0, 0]
+  end
+end
 
 board = Board.new
 p board
