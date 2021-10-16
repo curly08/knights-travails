@@ -2,11 +2,11 @@
 
 # Board class
 class Board
-  attr_accessor :squares, :knight
+  attr_accessor :knight
 
   def initialize
-    @grid = make_grid
     @knight = Knight.new
+    @grid = make_grid
   end
 
   def make_grid
@@ -17,10 +17,22 @@ class Board
     columns.each do |y|
       print '|'
       rows.each do |x|
+        print knight.position == [x, y] ? 'K|' : '_|'
         squares.push(Square.new(x, y))
-        print '_|'
       end
       puts "\n"
+    end
+    squares
+  end
+
+  def self.square_coordinates
+    rows = [0, 1, 2, 3, 4, 5, 6, 7]
+    columns = [7, 6, 5, 4, 3, 2, 1, 0]
+    squares = []
+    columns.each do |y|
+      rows.each do |x|
+        squares.push([x, y])
+      end
     end
     squares
   end
@@ -36,11 +48,11 @@ end
 
 # Knight class
 class Knight
-  attr_accessor :position, :squares
+  attr_accessor :position, :possible_moves
 
   def initialize
     @position = [0, 0]
-    @squares = make_square_coordinates
+    @possible_moves = check_possible_moves
   end
 
   def check_possible_moves(position = @position)
@@ -56,23 +68,11 @@ class Knight
     ]
     possible_moves = []
     moves.each do |move|
-      possible_moves.push(move) if squares.include?(move)
+      possible_moves.push(move) if Board.square_coordinates.include?(move)
     end
     possible_moves
-  end
-
-  def make_square_coordinates
-    rows = [0, 1, 2, 3, 4, 5, 6, 7]
-    columns = [7, 6, 5, 4, 3, 2, 1, 0]
-    squares = []
-    columns.each do |y|
-      rows.each do |x|
-        squares.push([x, y])
-      end
-    end
-    squares
   end
 end
 
 board = Board.new
-p board.knight.check_possible_moves
+p board.knight.possible_moves
