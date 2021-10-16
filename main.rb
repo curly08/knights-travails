@@ -2,36 +2,33 @@
 
 # Board class
 class Board
-  attr_accessor :knight
+  attr_accessor :knight, :squares
+  attr_reader :rows, :columns
 
   def initialize
+    @columns = [0, 1, 2, 3, 4, 5, 6, 7]
+    @rows = [7, 6, 5, 4, 3, 2, 1, 0]
     @knight = Knight.new
     @grid = make_grid
+    @squares = make_squares
   end
 
   def make_grid
-    rows = [0, 1, 2, 3, 4, 5, 6, 7]
-    columns = [7, 6, 5, 4, 3, 2, 1, 0]
-    squares = []
     puts ' _ _ _ _ _ _ _ _ '
-    columns.each do |y|
+    rows.each do |y|
       print '|'
-      rows.each do |x|
+      columns.each do |x|
         print knight.position == [x, y] ? 'K|' : '_|'
-        squares.push(Square.new(x, y))
       end
       puts "\n"
     end
-    squares
   end
 
-  def self.square_coordinates
-    rows = [0, 1, 2, 3, 4, 5, 6, 7]
-    columns = [7, 6, 5, 4, 3, 2, 1, 0]
+  def make_squares
     squares = []
-    columns.each do |y|
-      rows.each do |x|
-        squares.push([x, y])
+    rows.each do |y|
+      columns.each do |x|
+        squares.push(Square.new(x, y))
       end
     end
     squares
@@ -68,9 +65,21 @@ class Knight
     ]
     possible_moves = []
     moves.each do |move|
-      possible_moves.push(move) if Board.square_coordinates.include?(move)
+      possible_moves.push(move) if square_coordinates.include?(move)
     end
     possible_moves
+  end
+
+  def square_coordinates
+    columns = [0, 1, 2, 3, 4, 5, 6, 7]
+    rows = [7, 6, 5, 4, 3, 2, 1, 0]
+    squares = []
+    rows.each do |y|
+      columns.each do |x|
+        squares.push([x, y])
+      end
+    end
+    squares
   end
 end
 
