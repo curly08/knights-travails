@@ -4,7 +4,7 @@ require 'pry-byebug'
 
 # Board class
 class Board
-  attr_accessor :knight, :squares, :possible_moves, :possible_squares
+  attr_accessor :knight, :squares, :possible_moves, :possible_squares, :graph
   attr_reader :rows, :columns
 
   def initialize
@@ -13,8 +13,8 @@ class Board
     @knight = Knight.new
     @grid = make_grid
     @possible_squares = make_possible_squares
+    @graph = graph_knight_moves
     # @possible_moves = check_possible_moves
-    # binding.pry
     # @squares = make_squares
   end
 
@@ -27,12 +27,6 @@ class Board
       end
       puts "\n"
     end
-  end
-
-  def make_graph(start)
-    graph = []
-    graph.push(Square.new(start, check_possible_moves(start)))
-    graph
   end
 
   def make_possible_squares
@@ -49,27 +43,43 @@ class Board
     knight.moves(position).select { |move| possible_squares.include?(move) }
   end
 
-  # def knight_moves(start, end)
-    
-  # end
+  def graph_knight_moves
+    graph = Graph.new
+    possible_squares.each { |square_coordinates| graph.add_node(Node.new(square_coordinates)) }
+    graph.nodes.each do |coordinates, _node|
+      neighbors = check_possible_moves(coordinates)
+      neighbors.each do |neighbor|
+        graph.add_edge(coordinates, neighbor) if check_if_neighbor_exists(graph, coordinates, neighbor).nil?
+      end
+    end
+    graph
+  end
+
+  def check_if_neighbor_exists(graph, origin, neighbor)
+    return nil if graph.nodes[origin].neighbors.empty?
+
+    graph.nodes[origin].neighbors.find { |node| node.coordinates == neighbor }
+  end
 end
 
 # Square class
 class Node
-  attr_reader :coordinates
+  attr_reader :coordinates, :neighbors
 
   def initialize(coordinates)
     @coordinates = coordinates
-    @adjacent_nodes = []
+    @neighbors = []
   end
 
-  def add_edge(adjacent_node)
-    @adjacent_nodes << adjacent_node
+  def add_edge(neighbor)
+    @neighbors << neighbor
   end
 end
 
 # Graph class
 class Graph
+  attr_reader :nodes
+
   def initialize
     @nodes = {}
   end
@@ -88,8 +98,8 @@ end
 class Knight
   attr_accessor :position
 
-  def initialize
-    @position = [0, 0]
+  def initialize(position = [0, 0])
+    @position = position
   end
 
   def moves(position)
@@ -107,5 +117,5 @@ class Knight
 end
 
 board = Board.new
-# p board.check_possible_moves([3,0])
-p board.make_graph([0,0])
+# binding.pry
+board.graph
