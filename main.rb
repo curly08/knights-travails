@@ -14,8 +14,6 @@ class Board
     @grid = make_grid
     @possible_squares = make_possible_squares
     @graph = graph_knight_moves
-    # @possible_moves = check_possible_moves
-    # @squares = make_squares
   end
 
   def make_grid
@@ -59,6 +57,33 @@ class Board
     return nil if graph.nodes[origin].neighbors.empty?
 
     graph.nodes[origin].neighbors.find { |node| node.coordinates == neighbor }
+  end
+
+  def knight_moves(start, destination, queue = [], visited = [])
+    origin = graph.nodes[start]
+    # Add a node/vertex from the graph to a queue of nodes to be “visited”.
+    visited << origin.coordinates
+    origin.neighbors.each do |neighbor|
+      queue << neighbor
+    end
+    return if visited[-1] == destination
+
+    knight_moves(queue.shift.coordinates, destination, queue, visited)
+    visited
+
+  #   until queue.empty? || origin.coordinates == destination
+  #     # Visit the topmost node in the queue, and mark it as such.
+  #     # If that node has any neighbors, check to see if they have been “visited” or not.
+  #     # Add any neighboring nodes that still need to be “visited” to the queue.
+  #     origin.neighbors.each do |neighbor|
+  #       queue << neighbor unless visited.include?(neighbor)
+  #     end
+  #     # Remove the node we’ve visited from the queue.
+  #     visited << queue.shift
+  #     parent = visited[-1]
+  #     origin = queue[0]
+  #   end
+  #   visited.each { |node| p node.coordinates }
   end
 end
 
@@ -117,5 +142,5 @@ class Knight
 end
 
 board = Board.new
-# binding.pry
-board.graph
+binding.pry
+p board.knight_moves([0, 0], [3, 0])
