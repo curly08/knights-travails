@@ -59,41 +59,42 @@ class Board
     graph.nodes[origin].neighbors.find { |node| node.coordinates == neighbor }
   end
 
-  def knight_moves(start, destination, queue = [], visited = [])
-    origin = graph.nodes[start]
-    # Add a node/vertex from the graph to a queue of nodes to be “visited”.
-    visited << origin.coordinates
-    origin.neighbors.each do |neighbor|
-      queue << neighbor
+  def knight_moves(start, destination)
+    queue = []
+    visited = []
+    current = graph.nodes[start]
+    destination = graph.nodes[destination]
+    queue << current unless visited.include?(current)
+    until current == destination
+      current = queue.first
+      current.neighbors.each do |neighbor|
+        next if visited.include?(neighbor)
+
+        queue << neighbor
+        neighbor.parent = current
+      end
+      visited << current
+      queue.shift
     end
-    return if visited[-1] == destination
-
-    knight_moves(queue.shift.coordinates, destination, queue, visited)
-    visited
-
-  #   until queue.empty? || origin.coordinates == destination
-  #     # Visit the topmost node in the queue, and mark it as such.
-  #     # If that node has any neighbors, check to see if they have been “visited” or not.
-  #     # Add any neighboring nodes that still need to be “visited” to the queue.
-  #     origin.neighbors.each do |neighbor|
-  #       queue << neighbor unless visited.include?(neighbor)
-  #     end
-  #     # Remove the node we’ve visited from the queue.
-  #     visited << queue.shift
-  #     parent = visited[-1]
-  #     origin = queue[0]
-  #   end
-  #   visited.each { |node| p node.coordinates }
+    path = []
+    until current.coordinates == start
+      path.unshift(current.coordinates)
+      current = current.parent
+    end
+    path.unshift(current.coordinates)
+    path
   end
 end
 
 # Square class
 class Node
+  attr_accessor :parent
   attr_reader :coordinates, :neighbors
 
   def initialize(coordinates)
     @coordinates = coordinates
     @neighbors = []
+    @parent = nil
   end
 
   def add_edge(neighbor)
@@ -143,4 +144,4 @@ end
 
 board = Board.new
 binding.pry
-p board.knight_moves([0, 0], [3, 0])
+p board.knight_moves([0, 0], [3, 3])
