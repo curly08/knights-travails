@@ -1,0 +1,1 @@
+This project represents my first foray into more complex graph data structures. The main method for this project, "knight_moves", uses BFS to find a node, then traces back through its parents to produce the shortest path between two nodes.
