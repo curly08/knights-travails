@@ -1,17 +1,15 @@
 # frozen_string_literal: true
 
-require 'pry-byebug'
-
 # Board class
 class Board
-  attr_accessor :knight, :squares, :possible_moves, :possible_squares, :graph
+  attr_accessor :knight, :possible_squares, :graph
   attr_reader :rows, :columns
 
   def initialize
     @columns = [0, 1, 2, 3, 4, 5, 6, 7]
     @rows = [7, 6, 5, 4, 3, 2, 1, 0]
     @knight = Knight.new
-    @grid = make_grid
+    # @grid = make_grid
     @possible_squares = make_possible_squares
     @graph = graph_knight_moves
   end
@@ -76,13 +74,20 @@ class Board
       visited << current
       queue.shift
     end
+    retrace_path(start, current)
+  end
+
+  def retrace_path(start, current)
     path = []
+    level = 0
     until current.coordinates == start
       path.unshift(current.coordinates)
       current = current.parent
+      level += 1
     end
     path.unshift(current.coordinates)
-    path
+    puts "You made it in #{level} moves! Here's your path:"
+    path.each { |square| puts square.to_s }
   end
 end
 
@@ -143,5 +148,4 @@ class Knight
 end
 
 board = Board.new
-binding.pry
-p board.knight_moves([0, 0], [3, 3])
+board.knight_moves([3, 3], [4, 3])
